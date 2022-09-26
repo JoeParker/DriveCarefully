@@ -12,19 +12,19 @@ protected cb func OnTrafficBumpEvent(evt: ref<VehicleTrafficBumpEvent>) -> Bool 
 
     if !GameObject.IsCooldownActive(this, n"bumpCooldown") {
         transactionSystem.RemoveItemByTDBID(playerPuppet, t"Items.money", charge);
-        showPaymentMessage(this.GetGame(), charge);
+        showPaymentMessage(this.GetGame(), charge, playerMoney == 0);
     };
     return wrappedMethod(evt);
 }
 
 // Notification
 
-final static func showPaymentMessage(gameInstance: GameInstance, price: Int32) -> Void {
+final static func showPaymentMessage(gameInstance: GameInstance, price: Int32, insufficientFunds: Bool) -> Void {
     let onscreenMsg: SimpleScreenMessage;
 
     onscreenMsg.isShown = true;
     onscreenMsg.duration = 5.0;
-    onscreenMsg.message = s"Traffic Collision Detected.\nYou have been charged \(IntToString(price))§.\nHave a pleasant day.";
+    onscreenMsg.message = insufficientFunds ? "Traffic Collision Detected.\nInsufficient funds to cover damages.\nPlease drive carefully." : s"Traffic Collision Detected.\nYou have been charged \(IntToString(price))§\nHave a pleasant day.";
 
     GameInstance.GetBlackboardSystem(gameInstance).Get(GetAllBlackboardDefs().UI_Notifications).SetVariant(GetAllBlackboardDefs().UI_Notifications.OnscreenMessage, ToVariant(onscreenMsg), true);
 }
