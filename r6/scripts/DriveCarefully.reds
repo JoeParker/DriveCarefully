@@ -1,9 +1,11 @@
+import DriveCarefully.Config.*
+
 // During a traffic collision, charge a price based on the impact velocity
 
 @wrapMethod(VehicleObject)
 protected cb func OnTrafficBumpEvent(evt: ref<VehicleTrafficBumpEvent>) -> Bool {
     let impact: Float = evt.impactVelocityChange;
-    let price: Int32 = RoundMath(impact * 10.0) + 10;
+    let price: Int32 = (RoundMath(impact * 10.0) + 10) * 2 * costModifier();
     let playerPuppet = GetPlayer(this.GetGame());
     let transactionSystem = GameInstance.GetTransactionSystem(this.GetGame());
 
@@ -12,7 +14,9 @@ protected cb func OnTrafficBumpEvent(evt: ref<VehicleTrafficBumpEvent>) -> Bool 
 
     if !GameObject.IsCooldownActive(this, n"bumpCooldown") {
         transactionSystem.RemoveItemByTDBID(playerPuppet, t"Items.money", charge);
-        showPaymentMessage(this.GetGame(), charge, playerMoney == 0);
+        if enableMessages() {
+            showPaymentMessage(this.GetGame(), charge, playerMoney == 0);
+        };
     };
     return wrappedMethod(evt);
 }
