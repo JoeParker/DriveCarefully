@@ -12,7 +12,8 @@ protected cb func OnTrafficBumpEvent(evt: ref<VehicleTrafficBumpEvent>) -> Bool 
     let playerMoney: Int32 = transactionSystem.GetItemQuantity(playerPuppet, MarketSystem.Money());
     let charge: Int32 = Min(price, playerMoney);
 
-    if !GameObject.IsCooldownActive(this, n"bumpCooldown") {
+    // Apply a cooldown of 1s, and only trigger when the player is driving
+    if !GameObject.IsCooldownActive(this, n"bumpCooldown") && VehicleComponent.IsMountedToVehicle(playerPuppet.GetGame(), playerPuppet) {
         transactionSystem.RemoveItemByTDBID(playerPuppet, t"Items.money", charge);
         if enableMessages() {
             showPaymentMessage(this.GetGame(), charge, playerMoney == 0);
